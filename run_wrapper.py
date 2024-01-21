@@ -6,7 +6,7 @@ def main ():
     prop_model = 0
     distance = 1
     begin = 0
-    end = 53
+    end = 43
     try:
         while 1:
             command = "./ns3 run scratch/station_propagation_simulation_station.cc -- -prop="+str(prop_model)+" -dist="+str(distance)+" -end="+str(end)+" -begin="+str(begin)
