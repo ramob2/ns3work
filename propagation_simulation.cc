@@ -38,10 +38,10 @@
 enum pro_modell {Friis = 0, FixedRss, ThreeLogDistance, TwoRayGround, Nakagami};
 using namespace ns3;   
 
-NS_LOG_COMPONENT_DEFINE ("PropagationSimulation");
+NS_LOG_COMPONENT_DEFINE ("PropagationSimulationStation");
 int32_t total_packet_count_rx = 0;
 int32_t total_packet_count_tx = 0;
-int32_t total_signal = 0;
+double total_signal = 0;
 int32_t total_noise = 0;
 int32_t total_packet_aggregation = 0;
 uint32_t packet_size_aggregated = 0;
@@ -56,7 +56,7 @@ void MonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, WifiTxVe
 {
   total_noise = signalNoise.noise;
   total_packet_count_tx++;
-
+  packet_size_aggregated += packet->GetSize(); 
   if (!start_flag && Simulator::Now().GetSeconds() >= calculation_start)
   {
     start_flag = true;
@@ -72,18 +72,19 @@ void data_calculation (int distance_square , std::string propagation_model, doub
 {
 
   //propagation_model, distance, data throughput ,calculation_start, runtime (app_end-app_begin), app_begin, app_end (fixed) ,total_packet_count_rx, signal mean, noise mean, signal varianz, 
-  std::string file_name = propagation_model + ".csv";
+  std::string file_name = propagation_model + "_station.csv";
   std::ifstream experiment_file_check(file_name);
   std::ofstream experiment_file(file_name,std::ios_base::app | std::ios_base::out);
   if (!experiment_file_check)
   {
     std::cout << "File "<< file_name<<" not found" << std::endl;
-     experiment_file << "distance,troughput,server_troughput,calculation_start_after_app,runtime,total_packet_count_received,signal_mean, noise,signal_varianz" << std::endl;
+     experiment_file << "distance,troughput,server_troughput,calculation_start_after_app,runtime,total_packet_count_received,signal_mean,noise,signal_varianz" << std::endl;
   }
-  double all_trough = (double)total_packet_count_tx*8*1450/((app_end-calculation_start)*1000000);
+  double signal_mean = total_signal/(double)total_packet_count_rx;
+  double all_trough = (double)packet_size_aggregated*8/((app_end-calculation_start)*1000000);
   double troughput = (double)total_packet_count_rx*8*1450/((app_end-calculation_start)*1000000);
   experiment_file << sqrt(distance_square)<<","<<troughput<<","<<all_trough <<","<<calculation_start-app_begin<<"," <<(double) app_end-calculation_start<<"," <<\
-                           total_packet_count_rx<<"," << total_signal/total_packet_count_rx<<"," << total_noise<<"," << "0"<<  std::endl;
+                           total_packet_count_rx<<"," << signal_mean<<"," << total_noise<<"," << "0"<<  std::endl;
 
   experiment_file.close();  
   
@@ -108,8 +109,8 @@ int main (int argc, char *argv[])
   int propagation_type = 0;
   double distance = 1;
   double sim_end= 10.0;
-  int server_begin = 0; 
-  int server_end = 10;
+  double server_begin = 0; 
+  double server_end = 10;
   double app_begin = 0; 
   double app_end = 10; 
 

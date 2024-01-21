@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/Florian/Downloads/Uni/TH_Master/Kommunikation_in_verteilten_Systemen/sim/paper_code/ns3work",
+      "program": "/Users/Florian/Downloads/Uni/TH_Master/Kommunikation_in_verteilten_Systemen/sim/paper_code/ns3work/build/Debug/outDebug"
+    }
+  ]
+}
